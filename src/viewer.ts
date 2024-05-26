@@ -327,6 +327,8 @@ export class SkinViewer {
 
 	private _nameTag: NameTagObject | null = null;
 
+	loadImage: (...args: any[]) => any = loadImage;
+
 	constructor(options: SkinViewerOptions = {}) {
 		this.canvas = options.canvas === undefined ? document.createElement("canvas") : options.canvas;
 
