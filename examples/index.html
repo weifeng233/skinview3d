@@ -282,6 +282,11 @@
 			}
 		});
 
+		function addTimestampToUrl(url) {
+			const timestamp = new Date().getTime();
+			return `${url}?timestamp=${timestamp}`;
+		}
+
 		function reloadSkin(renew) {
 			const input = document.getElementById("skin_url");
 			const url = obtainTextureUrl("skin_url");
@@ -309,11 +314,14 @@
 					const overlay = document.getElementById(id).value;
 					if (overlay == "none")
 						return;
+					let originalOverlayUrl = `./img/${overlay}_${id}_${model}_${imageDimensions}.png`;
+					let overlayUrlWithTimestamp = addTimestampToUrl(originalOverlayUrl);
+
 					let skinImg = skinViewer.skinCanvas;
 					let tempCanvas = document.createElement('canvas');
 					let tempContext = tempCanvas.getContext('2d',{ willReadFrequently: true });
 					tempContext.drawImage(skinImg, 0, 0);
-					let coat_promise = skinViewer.loadImage(`./img/${overlay}_${id}_${model}_${imageDimensions}.png`)
+					let coat_promise = skinViewer.loadImage(overlayUrlWithTimestamp)
 						.then(image => {
 							const context = skinImg.getContext('2d',{ willReadFrequently: true });
 							context.drawImage(tempCanvas, 0, 0);
@@ -329,7 +337,6 @@
 					});
 				}
 			}
-
 		}
 
 		function reloadCape() {
