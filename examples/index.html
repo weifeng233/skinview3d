@@ -243,6 +243,45 @@
 			}
 		}
 
+		let imageDimensions = 64;
+		let skinModelsize = "default";
+
+		function getImageSize(url) {
+			const img = new Image();
+			img.onload = function () {
+				imageDimensions = img.width;
+				//console.log(imageDimensions);
+				var canvas = document.createElement('canvas');
+				var context = canvas.getContext('2d'); 
+				canvas.width = img.width;
+				canvas.height = img.height;
+				context.drawImage(img, 0, 0, img.width, img.height);
+				var imageData = context.getImageData(55*(img.width/64), 20*(img.height/64), 1, 1);
+				var data = imageData.data;
+				var alpha = data[3];
+				if(alpha>128){
+					document.getElementById("skin_model").value = "default";
+				}else{
+					document.getElementById("skin_model").value = "slim";
+				}
+				reloadSkin();
+				//console.log(alpha);
+
+			};
+			img.onerror = function () {
+				console.error('Image failed to load:', url);
+			};
+			img.src = url;
+		}
+		document.getElementById("skin_url_upload").addEventListener('change', function () {
+			if (this.files.length > 0) {
+				getImageSize(obtainTextureUrl("skin_url"));
+				document.getElementById("shawl").value = "none";
+				document.getElementById("coat").value = "none";
+
+			}
+		});
+
 		function reloadSkin(renew) {
 			const input = document.getElementById("skin_url");
 			const url = obtainTextureUrl("skin_url");
@@ -272,16 +311,14 @@
 						return;
 					let skinImg = skinViewer.skinCanvas;
 					let tempCanvas = document.createElement('canvas');
-					tempCanvas.width = skinImg.width;
-					tempCanvas.height = skinImg.height;
-					let tempContext = tempCanvas.getContext('2d');
+					let tempContext = tempCanvas.getContext('2d',{ willReadFrequently: true });
 					tempContext.drawImage(skinImg, 0, 0);
-					coat_promise = skinViewer.loadImage(`./img/${overlay}_${id}_${model}.png`)
+					let coat_promise = skinViewer.loadImage(`./img/${overlay}_${id}_${model}_${imageDimensions}.png`)
 						.then(image => {
-						const context = skinImg.getContext('2d');
-						context.drawImage(tempCanvas, 0, 0);
-						context.drawImage(image, 0, 0);
-					})
+							const context = skinImg.getContext('2d',{ willReadFrequently: true });
+							context.drawImage(tempCanvas, 0, 0);
+							context.drawImage(image, 0, 0);
+						})
 					.then(() => {
 						skinViewer.loadSkin(skinImg.toDataURL('image/png'), {
 							model: document.getElementById("skin_model").value
@@ -292,7 +329,7 @@
 					});
 				}
 			}
-		
+
 		}
 
 		function reloadCape() {
