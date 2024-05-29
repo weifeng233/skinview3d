@@ -323,10 +323,10 @@
 					tempContext.drawImage(skinImg, 0, 0);
 					let coat_promise = skinViewer.loadImage(overlayUrlWithTimestamp)
 						.then(image => {
-							const context = skinImg.getContext('2d',{ willReadFrequently: true });
-							context.drawImage(tempCanvas, 0, 0);
-							context.drawImage(image, 0, 0);
-						})
+						const context = skinImg.getContext('2d',{ willReadFrequently: true });
+						context.drawImage(tempCanvas, 0, 0);
+						context.drawImage(image, 0, 0);
+					})
 					.then(() => {
 						skinViewer.loadSkin(skinImg.toDataURL('image/png'), {
 							model: document.getElementById("skin_model").value
